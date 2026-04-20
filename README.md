@@ -33,38 +33,53 @@ $$
 
 ## DP General Solution Method
 **Bellman Equation (General)**
+
 $$
 V(s) = \max_{u \in A(s)} \left[ f(s, u) + V\big(T(s, u)\big) \right]
 $$
 
 - $V(s)$: value function (optimal future objective from state \( s \))  
 - $f(s, u)$: immediate reward (or cost)  
-- $T(s, u)$: state transition  
+- $T(s, u)$: state transition
+
 $$
 s_{t+1} = T(s_t, u_t)
 $$
+
 - $A(s)$: feasible action set  
 
 > Optimal value = immediate reward + optimal continuation value
 
 Then use **Backward Induction**:
 
-  1. Solve final step ( t=T )
+  1. Solve final step ( $t=T$ )
+
   $$
   V_T(s) = g(s)
   $$
-  - $\pi_T^*(s)$ is trivial since no action is taken at terminal time.
+  
+  $$
+  \pi_T^*(s)\ \text{is trivial (no action at terminal time)}
+  $$
 
-  2. Move backward to ( t=T-1 )
+  2. Move backward to ( $t = T-1$ )
+  
   $$
   V_{T-1}(s) = \max_{u \in A(s)} \left[ f(s, u) + V_{T}\big(T(s, u)\big) \right]
   $$ 
   $$
   \pi_{T-1}^*(s) = \arg\max_{u \in A(s)} \left[ f(s, u) + V_{T}\big(T(s, u)\big) \right]
   $$
-  3. Repeat until ( t=0 )
-  - $ V_0(s) $: optimal value  
-- $ \pi_t^*(s), \; t = 0, \dots, T-1 $: optimal policy  
+  
+  3. Repeat until ( $t = T-1, \dots, 0$ )
+  
+  $$
+  V_0(s)\ \text{: optimal value}
+  $$
+  
+  $$
+  \{\pi_t^*(s)\}_{t=0}^{T-1}\ \text{: optimal policy}
+  $$
 
 DP computes the optimal trading path via **backward recursion + forward simulation**, avoiding repeated large-scale optimization.
 
@@ -158,9 +173,7 @@ $$
 ## Quadratic Cost Function
 
 $$
-C_t = \underbrace{S_t^\top Q S_t }_{\text{state cost}}
-+ \underbrace{u_t^\top R u_t }_{\text{state cost}}
-+ \underbrace{2 S_t^\top M u_t}_{\text{state cost}}
+C_t = S_t^\top Q S_t + u_t^\top R u_t + 2 S_t^\top M u_t
 $$
 
 Where:
@@ -202,13 +215,9 @@ $$
 ## Recursive Form
 
 $$
-V_t(S_t) = \min_{u_t} \left [
+V_t(S_t) = \min_{u_t} \left[ S_t^\top Q S_t + u_t^\top R u_t + 2 S_t^\top M u_t + S_{t+1}^\top \Phi_{t+1} S_{t+1} \right]
+$$
 
-S_t^\top Q S_t + u_t^\top R u_t + 2 S_t^\top M u_t
-
-* S_{t+1}^\top \Phi_{t+1} S_{t+1}
-  \right]
-  $$
 
 Substitute:
 
@@ -221,11 +230,11 @@ $$
 ## Optimal Control (FOC)
 
 $$
-u_t^* =
-
-* (R + B^\top \Phi_{t+1} B)^{-1}
-  (M^\top + B^\top \Phi_{t+1} A) S_t
-  $$
+\begin{aligned}
+u_t^* = - (R + B^\top \Phi_{t+1} B)^{-1}
+(M^\top + B^\top \Phi_{t+1} A) S_t
+\end{aligned}
+$$
 
 ---
 
@@ -250,11 +259,8 @@ $$
 ## Value Function Update
 
 $$
-\Phi_t =
-Q + A^\top \Phi_{t+1} A
-
-* K_t^\top (R + B^\top \Phi_{t+1} B) K_t
-  $$
+\Phi_t = Q + A^\top \Phi_{t+1} A - K_t^\top (R + B^\top \Phi_{t+1} B) K_t
+$$
 
 ---
 

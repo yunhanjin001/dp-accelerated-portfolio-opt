@@ -1,5 +1,3 @@
-# 2026_cu_numeth
-
 # Dynamic Programming-Based Optimization for Multi-Period Portfolio Execution
 
 ## Motivation

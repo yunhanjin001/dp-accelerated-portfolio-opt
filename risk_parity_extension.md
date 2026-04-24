@@ -152,6 +152,37 @@ The full workflow is:
 
 ---
 
+## Experimental Results
+
+We compare the DP/LQR risk-parity tracking solver with a CVXPY benchmark using $T=30$, $n=5$, $\kappa=2.0$, and $\gamma_{tc}=0.5$.
+
+### Single-Run Comparison
+
+| Method | Time (ms) | Cost (lower = better) | Speedup |
+| :--- | ---: | ---: | ---: |
+| **CVXPY** | 26.45 | 0.007449 | 1× |
+| **DP/LQR** | 0.35 | 0.007449 | **~75×** |
+
+The DP/LQR solution achieves the same tracking cost as CVXPY, while solving the problem much faster. This confirms that the LQR reformulation is consistent with the convex optimization benchmark for the target-tracking objective.
+
+### Scaling Experiment
+
+We also test different numbers of assets with $T=30$.
+
+| Number of Assets $n$ | DP/LQR Time (ms) | CVXPY Time (ms) | Speedup |
+| ---: | ---: | ---: | ---: |
+| 2 | 0.30 | 22.88 | 75.2× |
+| 3 | 0.31 | 24.32 | 78.6× |
+| 5 | 0.38 | 31.95 | 84.3× |
+| 7 | 0.34 | 24.20 | 71.6× |
+| 10 | 0.37 | 25.08 | 68.7× |
+| 15 | 0.48 | 26.72 | 55.9× |
+| 20 | 0.59 | 32.83 | 55.3× |
+
+The scaling experiment shows that DP/LQR remains extremely fast as the number of assets increases, while CVXPY consistently requires significantly more runtime. The speed advantage decreases slightly for larger asset dimensions but remains substantial.
+
+---
+
 ## Practical Conclusion
 
 The risk-parity extension demonstrates that DP/LQR can also be used for target-based portfolio rebalancing problems.

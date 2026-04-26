@@ -50,31 +50,55 @@ def compute_objective(w_path, mu, Sigma, lam, gamma_tc):
 
 # --- Refactored Experiment Logic using the Black Box ---
 
+
+
 def run_single_comparison(T=30, n=5, lam=2.0, gamma_tc=0.5, seed=42):
+    """
+    Runs a comparison between LQR Black Box and CVXPY, 
+    measuring both accuracy and execution time.
+    """
     mu, Sigma, w0 = random_params(n, seed)
 
-    # Initialize Black Box Solver
+    # --- 1. Measure DP/LQR (Your Black Box) ---
     solver = MarkowitzLQR(risk_aversion=lam, tc_coeff=gamma_tc)
     
-    # Time DP Solver
-    t0 = time.perf_counter()
+    t0_dp = time.perf_counter()  # Start timer
+    
+    # Core LQR process: Solve once, then predict step-by-step
     solver.solve(T, mu, Sigma)
     w_dp = np.zeros((T + 1, n))
     w_dp[0] = w0
     for t in range(T):
         w_dp[t+1] = w_dp[t] + solver.predict(w_dp[t], t)
-    time_dp = (time.perf_counter() - t0) * 1000
+        
+    t1_dp = time.perf_counter()  # End timer
+    time_dp = (t1_dp - t0_dp) * 1000  # Convert to milliseconds
 
-    # Time CVXPY
-    t0 = time.perf_counter()
+    # --- 2. Measure CVXPY (The standard solver) ---
+    t0_cvx = time.perf_counter()
+    
     w_cvx = solve_cvxpy_markowitz(T, mu, Sigma, lam, gamma_tc, w0)
-    time_cvx = (time.perf_counter() - t0) * 1000
+    
+    t1_cvx = time.perf_counter()
+    time_cvx = (t1_cvx - t0_cvx) * 1000  # Convert to milliseconds
 
-    return dict(T=T, n=n, mu=mu, Sigma=Sigma, w_dp=w_dp, w_cvx=w_cvx,
-                time_dp=time_dp, time_cvx=time_cvx,
-                obj_dp=compute_objective(w_dp, mu, Sigma, lam, gamma_tc),
-                obj_cvx=compute_objective(w_cvx, mu, Sigma, lam, gamma_tc),
-                speedup=time_cvx / time_dp)
+    # --- 3. Compute Metrics ---
+    obj_dp  = compute_objective(w_dp,  mu, Sigma, lam, gamma_tc)
+    obj_cvx = compute_objective(w_cvx, mu, Sigma, lam, gamma_tc)
+    speedup = time_cvx / time_dp
+
+    return {
+        "T": T, "n": n, "mu": mu, "Sigma": Sigma,
+        "w_dp": w_dp, "w_cvx": w_cvx,
+        "time_dp": time_dp, 
+        "time_cvx": time_cvx,
+        "obj_dp": obj_dp, 
+        "obj_cvx": obj_cvx,
+        "speedup": speedup
+    }
+
+
+
 
 # --- Plotting function (Keep your original visual logic) ---
 
@@ -96,9 +120,23 @@ def plot_results(r):
     plt.tight_layout()
     plt.show()
 
+
 if __name__ == "__main__":
-    print("Running Benchmark Comparison...")
-    results = run_single_comparison()
-    print(f"DP Objective: {results['obj_dp']:.6f}")
-    print(f"CVX Objective: {results['obj_cvx']:.6f}")
-    plot_results(results)
+    print("=" * 40)
+    print("  Markowitz Optimizer: DP vs CVXPY")
+    print("=" * 40)
+    
+    
+    results = run_single_comparison(n=5, T=30)
+    
+    
+    print(f"\n[Performance Report]")
+    print(f"LQR Solver (Black Box) : {results['time_dp']:.4f} ms")
+    print(f"CVXPY Solver (Standard): {results['time_cvx']:.4f} ms")
+    print(f"Speedup Factor         : {results['speedup']:.2f}x")
+    
+    
+    print(f"\n[Accuracy Report]")
+    print(f"DP Objective  : {results['obj_dp']:.6f}")
+    print(f"CVX Objective : {results['obj_cvx']:.6f}")
+    print("=" * 40)

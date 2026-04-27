@@ -1,6 +1,5 @@
 # LQR Portfolio Optimizer
 
-[![PyPI version](https://badge.fury.io/py/lqr-portfolio-optimizer.svg)](https://badge.fury.io/py/lqr-portfolio-optimizer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
@@ -80,4 +79,4 @@ $$P_t = Q + A^\top P_{t+1} A - K_t^\top (R + B^\top P_{t+1} B) K_t$$
 ## Installation
 
 ```bash
-pip install lqr-portfolio-optimizer
+pip install .

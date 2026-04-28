@@ -195,8 +195,8 @@ Starting from $P_T$ (given), iterate for $t = T-1, T-2, \ldots, 0$:
 
 | Step | Formula | What you get |
 |------|---------|--------------|
-| 1 | $\tilde{R}_t = R + B^\top P_{t+1} B$ | Effective control cost |
-| 2 | $\tilde{M}_t = M + A^\top P_{t+1} B$ | Effective cross cost |
+| 1 | $\tilde{R}\_t = R + B^\top P\_{t+1} B$ | Effective control cost |
+| 2 | $\tilde{M}\_t = M + A^\top P\_{t+1} B$ | Effective cross cost |
 | 3 | $K_t = \tilde{R}_t^{-1}\, \tilde{M}_t^\top$ | Optimal feedback gain |
 | 4 | $P_t = Q + A^\top P_{t+1} A - K_t^\top \tilde{R}_t\, K_t$ | Updated value matrix |
 

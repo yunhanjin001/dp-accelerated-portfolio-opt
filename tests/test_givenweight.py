@@ -229,7 +229,7 @@ def plot_all(r, scale_rows):
     ax1.plot(steps, err_dp, color=COLORS["dp"], lw=2.5, label="DP/LQR")
     ax1.plot(steps, err_cvx, color=COLORS["cvx"], lw=2, ls="--", label="CVXPY")
 
-    ax1.set_title("Tracking Error ‖w - w_target‖₂ over time", color="white", fontsize=11)
+    ax1.set_title("Tracking Error ‖w - w_given‖₂ over time", color="white", fontsize=11)
     ax1.set_xlabel("Time step", color="white")
     ax1.set_ylabel("Tracking Error", color="white")
     ax1.tick_params(colors="white")

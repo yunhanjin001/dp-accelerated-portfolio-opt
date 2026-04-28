@@ -92,6 +92,7 @@ https://colab.research.google.com/github/yunhanjin001/dp-accelerated-portfolio-o
 
 ```bash
 pip install .
+```
 
 ---
 
@@ -116,5 +117,6 @@ Solve the LQR problem via backward induction and immediately execute the optimal
   - `K_gains` (ndarray): Optimal feedback gains (T, m, n)
   - `s_path` (ndarray): State trajectory (T+1, n)
   - `u_path` (ndarray): Control trajectory (T, m)
+
 ---
 

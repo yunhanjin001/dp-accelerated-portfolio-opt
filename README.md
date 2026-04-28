@@ -94,7 +94,7 @@ pip install .
 
 ---
 
-## 🛠️ API Reference
+## API Reference
 
 ### `solve_and_execute_lqr(T, A, B, Q, R, M, s0, P_terminal=None)`
 

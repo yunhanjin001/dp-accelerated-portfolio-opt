@@ -78,9 +78,7 @@ $$P_t = Q + A^\top P_{t+1} A - K_t^\top (R + B^\top P_{t+1} B) K_t$$
 
 ## Examples
 
-See `examples/demo.ipynb` for complete implementations of both problems with visualizations and benchmarking.
-
-https://colab.research.google.com/github/yunhanjin001/dp-accelerated-portfolio-opt/blob/main/demo.ipynb
+See `notebooks/demo.ipynb` for complete implementations of both problems with visualizations and benchmarking.
 
 ### 1. Optimal Execution Problem
 ### 2. Multi-Asset Markowitz Portfolio

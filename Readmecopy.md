@@ -210,7 +210,7 @@ $$u_t^* = -K_t\, s_t, \qquad s_{t+1} = A\, s_t + B\, u_t^*$$
 
 | Feature | Benefit |
 |---------|---------|
-| **Speed** | ~20–50x faster than CVXPY |
+| **Speed** | ~40–100x faster than CVXPY |
 | **Scalability** | Efficient for high-dimensional problems |
 | **Interpretability** | Explicit gain matrices $K_t$ at every step |
 | **Memory** | Pure matrix operations, no solver overhead |

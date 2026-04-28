@@ -18,6 +18,7 @@ Traditional convex optimization (e.g., CVXPY) becomes **computationally expensiv
 
 ---
 
+
 ## Dynamic Programming Framework
 
 ### The Bellman Equation
@@ -207,6 +208,25 @@ $$u_t^* = -K_t\, s_t, \qquad s_{t+1} = A\, s_t + B\, u_t^*$$
 ---
 
 ## Why LQR is Fast
+
+## Computational Efficiency: Big-O Analysis
+
+The primary advantage of the LQR solver is its ability to exploit the **temporal structure** of the portfolio optimization problem. Below is the comparison between this LQR implementation (via Riccati Recursion) and general-purpose convex optimization (via Interior Point Methods or ADMM used in CVXPY).
+
+| Feature | **LQR Solver (Riccati)** | **Standard QP (CVXPY)** |
+| :--- | :--- | :--- |
+| **Time Complexity** | $O(T \cdot n^3)$ | $O(T^3 \cdot n^3)$ |
+| **Space Complexity** | $O(T \cdot n^2)$ | $O(T^2 \cdot n^2)$ |
+| **Scaling Factor** | **Linear** with time horizon $T$ | **Cubic** with time horizon $T$ |
+| **Memory Bottleneck** | Local matrix storage | Global Hessian matrix |
+
+> **Variables:** > $T$: Number of time steps (horizon).  
+> $n$: Number of assets (state dimension).
+
+### Why the Math Matters
+1. **The Curse of Flattening:** A general solver (CVXPY) "flattens" the multi-period problem into one giant static optimization. This results in a decision vector of size $T \times n$, leading to a complexity that grows cubically with the time horizon ($T^3$).
+2. **The DP Advantage:** By using Dynamic Programming and Riccati Recursion, we solve the problem **backward in time**. Each step only requires inverting a matrix of size $n \times n$. Consequently, the complexity scales **linearly** ($T$) with time, allowing for much longer look-ahead horizons without a performance hit.
+
 
 | Feature | Benefit |
 |---------|---------|

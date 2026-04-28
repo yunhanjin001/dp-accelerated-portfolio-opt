@@ -104,12 +104,7 @@ $$V_t(s_t) = \min_{u_t}\; \underbrace{s_t^\top Q\, s_t + u_t^\top R\, u_t + 2\, 
 
 ### Step 3 — Expand the Future Cost
 
-$$
-(A s_t + B u_t)^\top P_{t+1} (A s_t + B u_t)
-= s_t^\top A^\top P_{t+1} A\, s_t
-+ 2\, s_t^\top A^\top P_{t+1} B\, u_t
-+ u_t^\top B^\top P_{t+1} B\, u_t
-$$
+$$(A s_t + B u_t)^\top P_{t+1} (A s_t + B u_t)= s_t^\top A^\top P_{t+1} A\ s_t+ 2\ s_t^\top A^\top P_{t+1} B\ u_t+ u_t^\top B^\top P_{t+1} B\ u_t$$
 
 $$P_t = Q + A^\top P_{t+1} A - K_t^\top (R + B^\top P_{t+1} B) K_t$$
 

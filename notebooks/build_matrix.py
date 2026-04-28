@@ -9,9 +9,12 @@ Sections covered (matching ``demo.ipynb``):
 * :func:`build_markowitz_matrices`           - Part B, multi-asset Markowitz
 * :func:`build_given_weight_single_matrices` - Part C, single-asset given-weight tracking
 * :func:`build_given_weight_multi_matrices`  - Part C, multi-asset given-weight tracking
+* :func:`get_risk_parity_target`             - Part D, compute static RP weights from Sigma
+* :func:`build_risk_parity_matrices`         - Part D, multi-asset risk-parity tracking
 """
 
 import numpy as np
+from scipy.optimize import minimize
 
 
 def build_execution_matrices(gamma, sigma_sq, eta, rho, beta, alpha0):
@@ -133,3 +136,39 @@ def build_given_weight_multi_matrices(w_given, kappa, gamma_tc, k_terminal, w0):
 
     s0 = np.append(w0, 1.0)
     return A, B, Q, R, M, s0, P_T
+
+
+
+def build_risk_parity_matrices(w_rp, kappa, gamma_tc, w0):
+    """Multi-asset Risk-Parity target tracking (Part D).
+
+    LQR cost per step: ``0.5*kappa*||w - w_rp||^2 + 0.5*gamma_tc*||u||^2``.
+    Augmented state ``[w; 1]``, no terminal penalty.
+
+    Returns ``(A, B, Q, R, M, s0)`` -- same convention as all other builders
+    except there is no ``P_T`` (terminal cost = 0).
+    """
+    w_rp = np.asarray(w_rp, dtype=float).ravel()
+    w0   = np.asarray(w0,  dtype=float).ravel()
+    n    = len(w_rp)
+    na   = n + 1
+
+    A = np.eye(na)
+    B = np.vstack([np.eye(n), np.zeros((1, n))])
+
+    ww = float(w_rp @ w_rp)
+
+    Q = np.zeros((na, na))
+    Q[:n, :n] = 0.5 * kappa * np.eye(n)
+    Q[n,  :n] = -0.5 * kappa * w_rp
+    Q[:n,  n] = -0.5 * kappa * w_rp
+    Q[n,   n] = 0.5 * kappa * ww
+
+    R = 0.5 * (kappa + gamma_tc) * np.eye(n)
+
+    M = np.zeros((na, n))
+    M[:n, :] = 0.5 * kappa * np.eye(n)
+    M[n,  :] = -0.5 * kappa * w_rp
+
+    s0 = np.append(w0, 1.0)
+    return A, B, Q, R, M, s0

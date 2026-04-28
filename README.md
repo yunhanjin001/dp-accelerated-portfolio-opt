@@ -24,24 +24,24 @@ Traditional convex optimization (e.g., CVXPY) becomes **computationally expensiv
 
 DP recursively defines optimal value via the **Bellman equation**:
 
-$$V(s) = \max_{u \in A(s)} \left[ f(s, u) + V\big(T(s, u)\big) \right]$$
+$$V(s) = \min_{u \in A(s)} \left[ f(s, u) + V\big(T(s, u)\big) \right]$$
 
 - $V(s)$: value function  
-- $f(s, u)$: immediate reward  
+- $f(s, u)$: immediate cost  
 - $T(s, u)$: state transition, $s_{t+1} = T(s_t, u_t)$
 
-**Key Insight:** Optimal value = immediate reward + optimal continuation value
+**Key Insight:** Optimal value = immediate cost + optimal continuation cost
 
 ### Backward Induction
 
 1. **Initialize** at $t=T$: $V_T(s) = g(s)$
 2. **Recurse backward** for $t = T-1, \ldots, 0$:
 
-   $$V_t(s) = \max_{u} \left[ f(s, u) + V_{t+1}\big(T(s, u)\big) \right]$$
+   $$V_t(s) = \min_{u} \left[ c(s, u) + V_{t+1}\big(T(s, u)\big) \right]$$
 
 3. **Extract policy**:
 
-   $$\pi_t^*(s) = \arg\max_u \left[ f(s, u) + V_{t+1}\big(T(s, u)\big) \right]$$
+   $$\pi_t^*(s) = \arg\min_u \left[ c(s, u) + V_{t+1}\big(T(s, u)\big) \right]$$
 
 ---
 

@@ -69,10 +69,22 @@ $$P_t = Q + A^\top P_{t+1} A - K_t^\top (R + B^\top P_{t+1} B) K_t$$
 
 | Feature | Benefit |
 |---------|---------|
-| **Speed** | ~20-50x faster than CVXPY |
+| **Speed** | ~20-100x faster than CVXPY |
 | **Scalability** | Efficient for high-dimensional problems |
 | **Interpretability** | Explicit gain matrices |
 | **Memory** | Pure matrix operations |
+
+---
+
+## Examples
+
+See `examples/demo.ipynb` for complete implementations of both problems with visualizations and benchmarking.
+
+https://colab.research.google.com/github/yunhanjin001/dp-accelerated-portfolio-opt/blob/main/demo.ipynb
+
+### 1. Optimal Execution Problem
+### 2. Multi-Asset Markowitz Portfolio
+### 3. Given weight Multi Asset risk parity
 
 ---
 
@@ -80,3 +92,29 @@ $$P_t = Q + A^\top P_{t+1} A - K_t^\top (R + B^\top P_{t+1} B) K_t$$
 
 ```bash
 pip install .
+
+---
+
+## 🛠️ API Reference
+
+### `solve_and_execute_lqr(T, A, B, Q, R, M, s0, P_terminal=None)`
+
+Solve the LQR problem via backward induction and immediately execute the optimal policy.
+
+**Parameters:**
+- `T` (int): Time horizon (number of steps)
+- `A` (ndarray): State transition matrix (n, n)
+- `B` (ndarray): Control input matrix (n, m)
+- `Q` (ndarray): State cost matrix (n, n), must be positive semi-definite
+- `R` (ndarray): Control cost matrix (m, m), must be positive definite
+- `M` (ndarray): Cross-term cost matrix (n, m)
+- `s0` (ndarray): Initial state vector (n,)
+- `P_terminal` (ndarray, optional): Terminal cost matrix (n, n)
+
+**Returns:**
+- `result` (LQRResult):
+  - `K_gains` (ndarray): Optimal feedback gains (T, m, n)
+  - `s_path` (ndarray): State trajectory (T+1, n)
+  - `u_path` (ndarray): Control trajectory (T, m)
+---
+

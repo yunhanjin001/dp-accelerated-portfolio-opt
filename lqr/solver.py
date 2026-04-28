@@ -15,7 +15,7 @@ Reference:
 
 import numpy as np
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 @dataclass
@@ -39,15 +39,18 @@ def solve_lqr(
     Q: np.ndarray,
     R: np.ndarray,
     M: np.ndarray,
+    P_terminal: Optional[np.ndarray] = None,
 ) -> np.ndarray:
     """Compute optimal LQR feedback gains via backward induction.
 
     Solves the finite-horizon Linear-Quadratic Regulator problem by
     minimizing the quadratic objective::
 
-        sum_{t=0}^{T-1} [ s_t' Q s_t + u_t' R u_t + 2 s_t' M u_t ]
+        sum_{t=0}^{T-1} [ s_t' Q s_t + u_t' R u_t + 2 s_t' M u_t ]  +  s_T' P_T s_T
 
-    subject to linear dynamics::
+    where ``P_T`` is :paramref:`P_terminal` (default: zero matrix).
+
+    Subject to linear dynamics::
 
         s_{t+1} = A s_t + B u_t
 
@@ -68,6 +71,13 @@ def solve_lqr(
         Control cost matrix (positive definite), shape (m, m).
     M:
         Cross-term cost matrix, shape (n, m).
+    P_terminal:
+        Optional terminal state cost matrix, shape (n, n), positive
+        semidefinite. The total objective includes
+        ``s_T' P_terminal s_T`` in addition to the stage sum. The Riccati
+        recursion is initialized with ``P_T`` (i.e. value function at the
+        final time) equal to :paramref:`P_terminal`. If omitted, uses zero
+        terminal cost (same as ``P_terminal = 0``).
 
     Returns
     -------
@@ -82,7 +92,8 @@ def solve_lqr(
         K_t = (R + B' P_{t+1} B)^{-1} (M' + B' P_{t+1} A)
         P_t = Q + A' P_{t+1} A - K_t' (R + B' P_{t+1} B) K_t
 
-    working backward from ``P_T = 0``.
+    Backward induction starts from ``P_T = P_terminal`` if given, else
+    ``P_T = 0``.
 
     Examples
     --------
@@ -122,9 +133,15 @@ def solve_lqr(
         raise ValueError(f"R must have shape (m, m) = ({m}, {m})")
     if M.shape != (n, m):
         raise ValueError(f"M must have shape (n, m) = ({n}, {m})")
+    if P_terminal is not None:
+        P_terminal = np.asarray(P_terminal, dtype=float)
+        if P_terminal.shape != (n, n):
+            raise ValueError(
+                f"P_terminal must have shape (n, n) = ({n}, {n}), got {P_terminal.shape}"
+            )
 
     # Initialize value function matrix and gain storage
-    P = np.zeros((n, n))
+    P = np.zeros((n, n)) if P_terminal is None else P_terminal.copy()
     K_gains = np.zeros((T, m, n))
 
     # Backward induction (Riccati recursion)
@@ -236,6 +253,7 @@ def solve_and_execute_lqr(
     R: np.ndarray,
     M: np.ndarray,
     s0: np.ndarray,
+    P_terminal: Optional[np.ndarray] = None,
 ) -> LQRResult:
     """Solve LQR problem and execute the optimal policy in one call.
 
@@ -258,6 +276,8 @@ def solve_and_execute_lqr(
         Cross-term cost matrix, shape (n, m).
     s0:
         Initial state vector, shape (n,).
+    P_terminal:
+        Optional terminal cost (same meaning as in :func:`solve_lqr`).
 
     Returns
     -------
@@ -281,7 +301,7 @@ def solve_and_execute_lqr(
     >>> result.s_path.shape
     (11, 3)
     """
-    K_gains = solve_lqr(T, A, B, Q, R, M)
+    K_gains = solve_lqr(T, A, B, Q, R, M, P_terminal=P_terminal)
     s_path, u_path = execute_lqr(T, A, B, K_gains, s0)
 
     return LQRResult(K_gains=K_gains, s_path=s_path, u_path=u_path)

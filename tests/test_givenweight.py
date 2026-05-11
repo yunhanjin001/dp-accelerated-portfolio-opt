@@ -1,4 +1,4 @@
-# Multi-Asset Given Weight Tracking: DP/LQR vs CVXPY
+# Multi-Asset Given Weight Tracking: LQR vs CVXPY
 
 import numpy as np
 import cvxpy as cp
@@ -24,9 +24,7 @@ ASSET_PALETTE = [
 ]
 
 
-# ─────────────────────────────────────────────────────────
-#  DP / LQR Solver Wrapper
-# ─────────────────────────────────────────────────────────
+#  LQR Solver Wrapper
 
 def solve_tracking_dp(T, w_given, kappa, gamma_tc, w0):
     """
@@ -68,9 +66,7 @@ def solve_tracking_dp(T, w_given, kappa, gamma_tc, w0):
     return w_path
 
 
-# ─────────────────────────────────────────────────────────
 #  CVXPY Solver
-# ─────────────────────────────────────────────────────────
 
 def solve_cvxpy(T, w_given, kappa, gamma_tc, w0):
     """
@@ -103,9 +99,7 @@ def solve_cvxpy(T, w_given, kappa, gamma_tc, w0):
     return W.value
 
 
-# ─────────────────────────────────────────────────────────
 #  Utilities & Experiments
-# ─────────────────────────────────────────────────────────
 
 def compute_tracking_cost(w_path, w_given, kappa, gamma_tc):
     """
@@ -209,9 +203,7 @@ def run_scaling_experiment(n_list=None, T=30, n_trials=5, kappa=2.0, gamma_tc=0.
     return rows
 
 
-# ─────────────────────────────────────────────────────────
 #  Visualisation
-# ─────────────────────────────────────────────────────────
 
 def plot_all(r, scale_rows):
     fig = plt.figure(figsize=(16, 12))
@@ -337,9 +329,7 @@ def plot_all(r, scale_rows):
     return fig
 
 
-# ─────────────────────────────────────────────────────────
 #  Main
-# ─────────────────────────────────────────────────────────
 
 def main():
     print("=" * 60)
